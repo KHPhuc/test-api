@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import content from "./content/content";
 
 const persistConfig = {
   key: "root",
@@ -8,7 +9,12 @@ const persistConfig = {
   whitelist: [],
 };
 
-const persistedReducer = persistReducer(persistConfig, combineReducers({}));
+const persistedReducer = persistReducer(
+  persistConfig,
+  combineReducers({
+    content: content,
+  })
+);
 
 const store = configureStore({
   reducer: persistedReducer,

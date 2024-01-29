@@ -1,0 +1,23 @@
+.button {
+  border: none;
+  background: none;
+  padding: 8px 16px;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+}
+
+.button.active {
+  background: #e9ecef;
+}
+
+.cm-editor {
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+}
+
+.cm-focused {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+  outline: 0 !important;
+  border-radius: 6px;
+}

@@ -7,12 +7,13 @@ import { GoShareAndroid } from "react-icons/go";
 import { VscSymbolColor } from "react-icons/vsc";
 import ContentTab from "./ContentTab";
 import AuthorizationTab from "./AuthorizationTab";
+import Headers from "./Headers";
 
 export default function Home() {
   const lineContent = useAppSelector((state) => state.content.lineNumbers);
 
   const [isSelectMethod, setIsSelectMethod] = useState(false);
-  const [tabSelect, setTabSelect] = useState(0);
+  const [tabSelect, setTabSelect] = useState(2);
 
   const [method, setMethod] = useState("DELETE");
 
@@ -65,20 +66,20 @@ export default function Home() {
       <div className="flex flex-col">
         {/* Input url and button */}
         <div className="flex gap-[0.5rem] mt-[4px] mb-[30px]">
-          <Input placeholder="https://google.com" />
+          <Input placeholder="https://google.com" size="large" />
           <Select
             style={{
               width: isSelectMethod
                 ? 100
                 : method === "GET" || method === "PUT"
-                ? 70
-                : method === "POST"
                 ? 80
+                : method === "POST"
+                ? 85
                 : method === "PATCH"
-                ? 90
+                ? 95
                 : 100,
             }}
-            // 70 - 80 - 70 - 90 - 100
+            size="large"
             options={[
               { value: "GET", label: "GET" },
               { value: "POST", label: "POST" },
@@ -90,7 +91,9 @@ export default function Home() {
             value={method}
             onChange={(e) => setMethod(e)}
           />
-          <Button type="primary">Send</Button>
+          <Button type="primary" size="large" style={{ width: 120 }}>
+            Send
+          </Button>
         </div>
 
         {/* Tab custom payload, header */}
@@ -118,7 +121,15 @@ export default function Home() {
         </div>
 
         {/* Body tab */}
-        {tabSelect === 0 ? <ContentTab /> : tabSelect === 1 ? <AuthorizationTab /> : null}
+        {tabSelect === 0 ? (
+          <ContentTab />
+        ) : tabSelect === 1 ? (
+          <AuthorizationTab />
+        ) : tabSelect === 2 ? (
+          <Headers />
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

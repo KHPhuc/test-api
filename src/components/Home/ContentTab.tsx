@@ -49,6 +49,7 @@ export default function ContentTab() {
     <div className="flex flex-col">
       <Select
         className="mb-3"
+        size="large"
         options={[
           {
             value: "FORM",
@@ -79,14 +80,17 @@ export default function ContentTab() {
         onChange={(e) => dispatch(setContentType(e))}
       />
       <CodeMirror
+        className="text-[16px]"
         basicSetup={{
           highlightActiveLineGutter: false,
           highlightActiveLine: false,
+          lineNumbers: false,
+          autocompletion: false,
         }}
         height="250px"
         extensions={
           content !== "" && contentType === "JSON"
-            ? [langs.json(), lintGutter(), linter(jsonParseLinter())]
+            ? [langs.scala(), lintGutter(), linter(jsonParseLinter())]
             : []
         }
         placeholder={placeholder}

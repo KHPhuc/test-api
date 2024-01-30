@@ -6,7 +6,7 @@ import {
   StringStream,
   LanguageSupport,
 } from "@codemirror/language";
-import { useAppDispatch, useAppSelector } from "@/store/hook";
+import { useAppSelector } from "@/store/hook";
 
 export const CustomStoreLanguage = StreamLanguage.define({
   name: "header",
@@ -42,7 +42,7 @@ export const customStore = () => {
 };
 
 export default function RawTab() {
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
   const raw = useAppSelector((state) => state.raw.raw);
 
@@ -77,6 +77,7 @@ export default function RawTab() {
         className="text-[16px]"
         extensions={[customStore()]}
         theme={customTheme}
+        readOnly={true}
         placeholder={"Please enter a valid URL to see request details"}
         value={raw}
       />

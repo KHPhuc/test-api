@@ -7,7 +7,8 @@ import { GoShareAndroid } from "react-icons/go";
 import { VscSymbolColor } from "react-icons/vsc";
 import ContentTab from "./ContentTab";
 import AuthorizationTab from "./AuthorizationTab";
-import Headers from "./Headers";
+import Headers from "./HeadersTab";
+import RawTab from "./RawTab";
 
 export default function Home() {
   const lineContent = useAppSelector((state) => state.content.lineNumbers);
@@ -114,7 +115,7 @@ export default function Home() {
           </div>
           {/* Another feartures: share, theme, gen code, tem, save */}
           <div className="">
-            {features.map((e, i) => {
+            {features.map((_, i) => {
               return <div key={i} className="button"></div>;
             })}
           </div>
@@ -127,9 +128,9 @@ export default function Home() {
           <AuthorizationTab />
         ) : tabSelect === 2 ? (
           <Headers />
-        ) : (
-          ""
-        )}
+        ) : tabSelect === 3 ? (
+          <RawTab />
+        ) : null}
       </div>
     </div>
   );

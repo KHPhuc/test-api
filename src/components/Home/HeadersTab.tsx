@@ -6,6 +6,8 @@ import {
   StringStream,
   LanguageSupport,
 } from "@codemirror/language";
+import { useAppDispatch, useAppSelector } from "@/store/hook";
+import { setHeaders } from "@/store/headers/headers";
 
 export const CustomStoreLanguage = StreamLanguage.define({
   name: "header",
@@ -40,7 +42,11 @@ export const customStore = () => {
   return new LanguageSupport(CustomStoreLanguage, [CustomStoreCompletion]);
 };
 
-export default function Headers() {
+export default function HeadersTab() {
+  const dispatch = useAppDispatch();
+
+  const headers = useAppSelector((state) => state.headers.headers);
+
   const customTheme = createTheme({
     theme: "light",
     settings: {},
@@ -59,6 +65,7 @@ export default function Headers() {
       },
     ],
   });
+
   return (
     <div>
       <CodeMirror
@@ -72,7 +79,11 @@ export default function Headers() {
         className="text-[16px]"
         extensions={[customStore()]}
         theme={customTheme}
-        value="Accept: application/json {color: `#f00`}"
+        placeholder={
+          "Cache-Control: no-cache, no-store, must-revalidate\nPragma: no-cache\nExpires: 0"
+        }
+        value={headers}
+        onChange={(e) => dispatch(setHeaders(e))}
       />
     </div>
   );

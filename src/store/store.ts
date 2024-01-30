@@ -3,6 +3,8 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import content from "./content/content";
 import authorization from "./authorization/authorization";
+import headers from "./headers/headers";
+import raw from "./raw/raw";
 
 const persistConfig = {
   key: "root",
@@ -14,7 +16,9 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     content: content,
-    authorization: authorization
+    authorization: authorization,
+    headers: headers,
+    raw: raw,
   })
 );
 

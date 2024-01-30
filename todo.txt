@@ -1,0 +1,5 @@
+1. valid url
+
+2. create raw value
+- after enter url (on blur input url)
+- if url valid create raw

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { GoShareAndroid } from "react-icons/go";
 import { VscSymbolColor } from "react-icons/vsc";
 import ContentTab from "./ContentTab";
+import AuthorizationTab from "./AuthorizationTab";
 
 export default function Home() {
   const lineContent = useAppSelector((state) => state.content.lineNumbers);
@@ -117,7 +118,7 @@ export default function Home() {
         </div>
 
         {/* Body tab */}
-        {tabSelect === 0 ? <ContentTab /> : null}
+        {tabSelect === 0 ? <ContentTab /> : tabSelect === 1 ? <AuthorizationTab /> : null}
       </div>
     </div>
   );

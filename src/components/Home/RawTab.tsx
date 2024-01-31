@@ -3,7 +3,7 @@ import { createTheme } from "@uiw/codemirror-themes";
 import { tags as t } from "@lezer/highlight";
 import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { RawStore } from "@/libs/RawStore/RawStore";
-import { generateRaw, setLineRaw } from "@/store/raw/raw";
+import { setLineRaw } from "@/store/raw/raw";
 import { useEffect } from "react";
 
 export default function RawTab() {

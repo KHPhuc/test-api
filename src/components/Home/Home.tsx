@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/store/hook";
 
 import { Button, Dropdown, Input, Select, Tooltip } from "antd";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { TbArrowsRightLeft } from "react-icons/tb";
 import { RiArrowDownSFill } from "react-icons/ri";
@@ -15,6 +15,14 @@ import Response from "./Response";
 import Sidebar from "../Sidebar/Sidebar";
 import { makeRequest, setMethod, setUrl } from "@/store/request/request";
 import { toast } from "react-toastify";
+import {
+  generateRawAuth,
+  generateRawContent,
+  generateRawHeaders,
+  generateRawUrl,
+  setLineRaw,
+  setRaw,
+} from "@/store/raw/raw";
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -39,6 +47,12 @@ export default function Home() {
   const auth = useAppSelector((state) => state.authorization.auth);
   const headers = useAppSelector((state) => state.headers.headers);
 
+  const rawUrl = useAppSelector((state) => state.raw.rawUrl);
+  const rawAuth = useAppSelector((state) => state.raw.rawAuthorization);
+  const rawHost = useAppSelector((state) => state.raw.rawHost);
+  const rawHeaders = useAppSelector((state) => state.raw.rawHeaders);
+  const rawContent = useAppSelector((state) => state.raw.rawContent);
+
   const tab = [
     {
       id: 0,
@@ -57,6 +71,42 @@ export default function Home() {
       label: `Raw${lineRaw !== 0 ? " (" + lineRaw + ")" : ""}`,
     },
   ];
+
+  useEffect(() => {
+    dispatch(generateRawUrl(url, method));
+  }, [url, method, dispatch]);
+
+  useEffect(() => {
+    dispatch(generateRawAuth(authType, auth));
+  }, [authType, auth, dispatch]);
+
+  useEffect(() => {
+    dispatch(generateRawHeaders(headers));
+  }, [headers, dispatch]);
+
+  useEffect(() => {
+    dispatch(generateRawContent(contentType, content));
+  }, [contentType, content, dispatch]);
+
+  useEffect(() => {
+    let rawPre = "";
+    if (rawUrl !== "") {
+      rawPre += rawUrl;
+      if (rawAuth !== "") {
+        rawPre += "\n" + rawAuth;
+      }
+      rawPre += "\n" + rawHost;
+      if (rawHeaders !== "") {
+        rawPre += "\n" + rawHeaders;
+      }
+      if (rawContent !== "") {
+        rawPre += "\n\n" + rawContent;
+      }
+      const line = rawPre.split("\n").length;
+      dispatch(setLineRaw(line));
+    }
+    dispatch(setRaw(rawPre));
+  }, [rawUrl, rawAuth, rawHost, rawHeaders, rawContent, dispatch]);
 
   return (
     <div className="flex">
@@ -84,7 +134,6 @@ export default function Home() {
               ref={inputRef}
               placeholder="https://google.com"
               size="large"
-              
               onChange={(e) => dispatch(setUrl(e.target.value))}
             />
             <Select

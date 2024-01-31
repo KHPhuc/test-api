@@ -7,6 +7,7 @@ import headers from "./headers/headers";
 import raw from "./raw/raw";
 import system from "./system/system";
 import request from "./request/request";
+import response from "./response/response";
 
 const persistConfig = {
   key: "root",
@@ -20,6 +21,7 @@ const persistedReducer = persistReducer(
     system: system,
 
     request: request,
+    response: response,
 
     content: content,
     authorization: authorization,

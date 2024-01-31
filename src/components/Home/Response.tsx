@@ -2,8 +2,11 @@ import { useState } from "react";
 
 import CodeMirror from "@uiw/react-codemirror";
 import { RxCopy } from "react-icons/rx";
+import { useAppSelector } from "@/store/hook";
 
 export default function Response() {
+  const status = useAppSelector((state) => state.response.status);
+
   const [tabSelect, setTabSelect] = useState(0);
 
   const tab = [
@@ -34,7 +37,10 @@ export default function Response() {
       <h5 className="flex gap-[20px] text-[#6c757d] font-[500]">
         <div className="flex gap-2">
           <span>Status:</span>
-          <span></span>
+          <span className={`text-[#278800]`}>
+            {status} (
+            {status === 200 ? "OK" : status === 404 ? "Not Found" : ""})
+          </span>
         </div>
         <div className="flex gap-2">
           <span>Time:</span>

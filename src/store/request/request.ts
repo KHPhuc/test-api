@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import qs from "qs";
+import { setStatus } from "../response/response";
 
 const initialState = {
   url: "",
@@ -48,14 +49,16 @@ authType
   - NoAuths
 */
 export const makeRequest = (data: any) => (dispatch: any) => {
-  let payload = handleContent(data.contentType, data.content);
-  let header = handleHeaderContent({}, data.contentType);
-  header = handleHeaderAuth(header, data.authType, data.auth);
-  header = handleHeader(header, data.headers);
+  const payload = handleContent(data.contentType, data.content);
+  const header = {
+    ...handleHeaderContent(data.contentType),
+    ...handleHeaderAuth(data.authType, data.auth),
+    ...handleHeader(data.headers),
+  };
 
-  console.log(payload);
+  delete header[""];
 
-  let config = {
+  const config = {
     method: data.method,
     maxBodyLength: Infinity,
     url: data.url,
@@ -63,15 +66,16 @@ export const makeRequest = (data: any) => (dispatch: any) => {
     data: payload,
   };
 
-  // axios
-  //   .request(config)
-  //   .then((res) => {
-  //     console.log(res);
-  //   })
-  //   .then((err) => {
-  //     console.log(err);
-  //   })
-  //   .finally(() => {});
+  axios
+    .request(config)
+    .then((res) => {
+      console.log(res);
+      dispatch(setStatus(res.status));
+    })
+    .then((err) => {
+      console.log(err);
+    })
+    .finally(() => {});
 };
 
 const handleContent = (contentType: any, content: any) => {
@@ -87,8 +91,8 @@ const handleContent = (contentType: any, content: any) => {
     if (content === "") {
       return qs.stringify({});
     } else {
-      let payload: any = {};
-      let splitContent = content.split("\n");
+      const payload: any = {};
+      const splitContent = content.split("\n");
       splitContent.forEach((e: any) => {
         const splitValue = e.split("=");
         if (splitValue[1].length === 1) {
@@ -113,22 +117,30 @@ const handleContent = (contentType: any, content: any) => {
   }
 };
 
-const handleHeaderContent = (header: any, contentType: any) => {
-  const cache = header;
+const handleHeaderContent = (contentType: any) => {
+  let cache = {};
   switch (contentType) {
     case "FORM":
       break;
     case "JSON":
-      cache["Content-Type"] = "application/json";
+      cache = {
+        "Content-Type": "application/json",
+      };
       break;
     case "HTML":
-      cache["Content-Type"] = "text/html";
+      cache = {
+        "Content-Type": "text/html",
+      };
       break;
     case "XML":
-      cache["Content-Type"] = "application/xml";
+      cache = {
+        "Content-Type": "application/xml",
+      };
       break;
     case "TEXT":
-      cache["Content-Type"] = "text/plain";
+      cache = {
+        "Content-Type": "text/plain",
+      };
       break;
     default:
       break;
@@ -137,17 +149,23 @@ const handleHeaderContent = (header: any, contentType: any) => {
   return cache;
 };
 
-const handleHeaderAuth = (header: any, authType: any, auth: any) => {
-  const cache = header;
+const handleHeaderAuth = (authType: any, auth: any) => {
+  let cache = {};
   switch (authType) {
     case "BearerToken":
-      cache["Authorization"] = `Bearer ${auth}`;
+      cache = {
+        Authorization: `Bearer ${auth}`,
+      };
       break;
     case "BasicAuth":
-      cache["Authorization"] = `Basic ${auth}`;
+      cache = {
+        Authorization: `Basic ${auth}`,
+      };
       break;
     case "Custom":
-      cache["Authorization"] = `${auth}`;
+      cache = {
+        Authorization: `${auth}`,
+      };
       break;
     default:
       break;
@@ -156,8 +174,8 @@ const handleHeaderAuth = (header: any, authType: any, auth: any) => {
   return cache;
 };
 
-const handleHeader = (header: any, headers: any) => {
-  const cache = header;
+const handleHeader = (headers: any) => {
+  const cache: any = {};
   const splitHeaders = headers.split("\n");
   splitHeaders.forEach((e: any) => {
     const splitE = e.split(":");

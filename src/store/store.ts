@@ -6,6 +6,7 @@ import authorization from "./authorization/authorization";
 import headers from "./headers/headers";
 import raw from "./raw/raw";
 import system from "./system/system";
+import request from "./request/request";
 
 const persistConfig = {
   key: "root",
@@ -17,6 +18,8 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     system: system,
+
+    request: request,
 
     content: content,
     authorization: authorization,

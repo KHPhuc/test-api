@@ -1,46 +1,9 @@
 import CodeMirror from "@uiw/react-codemirror";
 import { createTheme } from "@uiw/codemirror-themes";
 import { tags as t } from "@lezer/highlight";
-import {
-  StreamLanguage,
-  StringStream,
-  LanguageSupport,
-} from "@codemirror/language";
 import { useAppDispatch, useAppSelector } from "@/store/hook";
-import { setHeaders } from "@/store/headers/headers";
-
-export const CustomStoreLanguage = StreamLanguage.define({
-  name: "header",
-  startState: () => {
-    return {};
-  },
-  token: (stream: StringStream, state: any = {}): string | null => {
-    if (stream.match(/^[\w\d\s]+:{1}/g)) {
-      state.key = true;
-      return "atom";
-    }
-    if (stream.match(/(?:.*)$/)) {
-      if (state.key !== undefined && state.key) {
-        state.key = undefined;
-        return "string";
-      } else return "comment";
-    }
-
-    stream.next();
-    return "comment";
-  },
-  blankLine: (): void => {},
-  copyState: () => {},
-  indent: (): number | null => {
-    return 0;
-  },
-});
-
-export const CustomStoreCompletion = CustomStoreLanguage.data.of({});
-
-export const customStore = () => {
-  return new LanguageSupport(CustomStoreLanguage, [CustomStoreCompletion]);
-};
+import { setHeaders, setLineHeader } from "@/store/headers/headers";
+import { HeaderStore } from "@/libs/HeaderStore/HeaderStore";
 
 export default function HeadersTab() {
   const dispatch = useAppDispatch();
@@ -77,13 +40,29 @@ export default function HeadersTab() {
           foldGutter: false,
         }}
         className="text-[16px]"
-        extensions={[customStore()]}
+        extensions={[HeaderStore()]}
         theme={customTheme}
         placeholder={
           "Cache-Control: no-cache, no-store, must-revalidate\nPragma: no-cache\nExpires: 0"
         }
         value={headers}
-        onChange={(e) => dispatch(setHeaders(e))}
+        onChange={(e, editor: any) => {
+          if (e === "") {
+            dispatch(setLineHeader(0));
+          } else {
+            dispatch(setLineHeader(editor.state.doc.text.length));
+          }
+          let splitE = e.split("\n");
+          let cacheE = e.split("\n");
+          splitE.forEach((element: any, i:any) => {
+            let splitElement = element.split(":");
+            if (splitElement[0].match(/\s+/)) {
+              splitElement[0] = splitElement[0].replace(/\s+/, "");
+            }
+            cacheE[i] = splitElement.join(":");
+          });
+          dispatch(setHeaders(cacheE.join("\n")));
+        }}
       />
     </div>
   );

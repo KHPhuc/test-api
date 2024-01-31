@@ -1,4 +1,4 @@
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoAdd } from "react-icons/io5";
 
 export default function Sidebar() {
   return (
@@ -7,7 +7,7 @@ export default function Sidebar() {
         List request
       </h2>
       <div className="flex flex-col gap-[10px] mt-[10px]">
-        <div className="bg-[#4c4c4c] w-full h-[30px] flex items-center gap-[10px] px-[10px] box-border rounded-[6px] card-list">
+        <div className="bg-[#4c4c4c] w-full h-[30px] flex items-center gap-[10px] px-[10px] py-[5px] box-border rounded-[6px] card-list">
           {/* Get - 5AFF15
             POST - 4BB3FD
             PUT - E0479E
@@ -22,6 +22,10 @@ export default function Sidebar() {
             color="#ff4444"
             size={25}
           />
+        </div>
+        <div className="bg-[#4c4c4c] w-full h-[30px] flex items-center justify-center gap-[5px] px-[10px] py-[5px] box-border rounded-[6px] cursor-pointer card-list">
+          <IoAdd color="#ffffff" size={25} />
+          <span className="text-[#fff]">New request</span>
         </div>
       </div>
     </div>

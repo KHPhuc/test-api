@@ -1,7 +1,7 @@
-import { useAppSelector } from "@/store/hook";
+import { useAppDispatch, useAppSelector } from "@/store/hook";
 
 import { Button, Dropdown, Input, Select, Tooltip } from "antd";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { TbArrowsRightLeft } from "react-icons/tb";
 import { RiArrowDownSFill } from "react-icons/ri";
@@ -13,9 +13,16 @@ import RawTab from "./RawTab";
 import GenerateCode from "./GenerateCode";
 import Response from "./Response";
 import Sidebar from "../Sidebar/Sidebar";
+import { makeRequest, setMethod, setUrl } from "@/store/request/request";
+import { toast } from "react-toastify";
 
 export default function Home() {
+  const dispatch = useAppDispatch();
+  const inputRef: any = useRef();
+
   const lineContent = useAppSelector((state) => state.content.lineNumbers);
+  const lineHeader = useAppSelector((state) => state.headers.lineHeader);
+  const lineRaw = useAppSelector((state) => state.raw.lineRaw);
   const isOpenGenerateCode = useAppSelector(
     (state) => state.system.isOpenGenerateCode
   );
@@ -24,7 +31,13 @@ export default function Home() {
   const [isSelectMethod, setIsSelectMethod] = useState(false);
   const [tabSelect, setTabSelect] = useState(0);
 
-  const [method, setMethod] = useState("DELETE");
+  const url = useAppSelector((state) => state.request.url);
+  const method = useAppSelector((state) => state.request.method);
+  const contentType = useAppSelector((state) => state.content.contentType);
+  const content = useAppSelector((state) => state.content.content);
+  const authType = useAppSelector((state) => state.authorization.authType);
+  const auth = useAppSelector((state) => state.authorization.auth);
+  const headers = useAppSelector((state) => state.headers.headers);
 
   const tab = [
     {
@@ -37,11 +50,11 @@ export default function Home() {
     },
     {
       id: 2,
-      label: "Headers",
+      label: `Headers${lineHeader !== 0 ? " (" + lineHeader + ")" : ""}`,
     },
     {
       id: 3,
-      label: "Raw",
+      label: `Raw${lineRaw !== 0 ? " (" + lineRaw + ")" : ""}`,
     },
   ];
 
@@ -67,32 +80,69 @@ export default function Home() {
         >
           {/* Input url and button */}
           <div className="flex gap-[0.5rem] mt-[4px] mb-[30px]">
-            <Input placeholder="https://google.com" size="large" />
+            <Input
+              ref={inputRef}
+              placeholder="https://google.com"
+              size="large"
+              
+              onChange={(e) => dispatch(setUrl(e.target.value))}
+            />
             <Select
               style={{
-                width: isSelectMethod
-                  ? 100
-                  : method === "GET" || method === "PUT"
-                  ? 80
-                  : method === "POST"
-                  ? 85
-                  : method === "PATCH"
-                  ? 95
-                  : 100,
+                width: isSelectMethod ? "135px" : "",
               }}
               size="large"
               options={[
-                { value: "GET", label: "GET" },
-                { value: "POST", label: "POST" },
-                { value: "PUT", label: "PUT" },
-                { value: "PATCH", label: "PATCH" },
-                { value: "DELETE", label: "DELETE" },
+                { value: "get", label: "GET" },
+                { value: "post", label: "POST" },
+                { value: "put", label: "PUT" },
+                { value: "patch", label: "PATCH" },
+                { value: "delete", label: "DELETE" },
+                {
+                  value: "head",
+                  label: "HEAD",
+                },
+                {
+                  value: "options",
+                  label: "OPTIONS",
+                },
               ]}
               onDropdownVisibleChange={(e) => setIsSelectMethod(e)}
               value={method}
-              onChange={(e) => setMethod(e)}
+              onChange={(e) => dispatch(setMethod(e))}
             />
-            <Button type="primary" size="large" style={{ width: 120 }}>
+            <Button
+              type="primary"
+              size="large"
+              style={{ width: 120 }}
+              onClick={() => {
+                if (
+                  url === "" ||
+                  (!url
+                    .trim()
+                    .match(/^https:\/{2}([\w\d-]+\.{1})([\w\d-]+\.*){1,}.*$/) &&
+                    !url
+                      .trim()
+                      .match(/^http:\/{2}([\w\d-]+\.{1})([\w\d-]+\.*){1,}.*$/))
+                ) {
+                  toast.error("Please enter a correct URL and try again.");
+                  inputRef.current.focus();
+                } else {
+                  console.log("Xuoonsg");
+                  dispatch(
+                    makeRequest({
+                      url,
+                      method,
+                      content,
+                      contentType,
+                      auth,
+                      authType,
+                      headers,
+                    })
+                  );
+                }
+              }}
+            >
               Send
             </Button>
           </div>

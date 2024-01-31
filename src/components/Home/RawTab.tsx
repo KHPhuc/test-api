@@ -1,55 +1,28 @@
 import CodeMirror from "@uiw/react-codemirror";
 import { createTheme } from "@uiw/codemirror-themes";
 import { tags as t } from "@lezer/highlight";
-import {
-  StreamLanguage,
-  StringStream,
-  LanguageSupport,
-} from "@codemirror/language";
-import { useAppSelector } from "@/store/hook";
-
-export const CustomStoreLanguage = StreamLanguage.define({
-  name: "header",
-  startState: () => {
-    return {};
-  },
-  token: (stream: StringStream, state: any = {}): string | null => {
-    if (stream.match(/^[\w\d\s]+:{1}/g)) {
-      state.key = true;
-      return "atom";
-    }
-    if (stream.match(/(?:.*)$/)) {
-      if (state.key !== undefined && state.key) {
-        state.key = undefined;
-        return "string";
-      } else return "comment";
-    }
-
-    stream.next();
-    return "comment";
-  },
-  blankLine: (): void => {},
-  copyState: () => {},
-  indent: (): number | null => {
-    return 0;
-  },
-});
-
-export const CustomStoreCompletion = CustomStoreLanguage.data.of({});
-
-export const customStore = () => {
-  return new LanguageSupport(CustomStoreLanguage, [CustomStoreCompletion]);
-};
+import { useAppDispatch, useAppSelector } from "@/store/hook";
+import { RawStore } from "@/libs/RawStore/RawStore";
+import { generateRaw, setLineRaw } from "@/store/raw/raw";
+import { useEffect } from "react";
 
 export default function RawTab() {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   const raw = useAppSelector((state) => state.raw.raw);
+
+  useEffect(() => {
+    //dispatch(generateRaw());
+  }, []);
 
   const customTheme = createTheme({
     theme: "light",
     settings: {},
     styles: [
+      {
+        tag: t.keyword,
+        color: "#708",
+      },
       {
         tag: t.atom,
         color: "#219",
@@ -57,6 +30,10 @@ export default function RawTab() {
       {
         tag: t.string,
         color: "#a11",
+      },
+      {
+        tag: t.link,
+        color: "#f50",
       },
       {
         tag: t.comment,
@@ -75,11 +52,18 @@ export default function RawTab() {
           foldGutter: false,
         }}
         className="text-[16px]"
-        extensions={[customStore()]}
+        extensions={[RawStore()]}
         theme={customTheme}
         readOnly={true}
         placeholder={"Please enter a valid URL to see request details"}
         value={raw}
+        onChange={(e, editor: any) => {
+          if (e === "") {
+            dispatch(setLineRaw(0));
+          } else {
+            dispatch(setLineRaw(editor.state.doc.text.length));
+          }
+        }}
       />
     </div>
   );

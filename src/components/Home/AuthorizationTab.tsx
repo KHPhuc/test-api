@@ -1,11 +1,39 @@
-import { setAuthType } from "@/store/authorization/authorization";
+import {
+  setAuth,
+  setAuthBearer,
+  setAuthCustom,
+  setAuthType,
+  setPassword,
+  setUsername,
+} from "@/store/authorization/authorization";
 import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { Card, Input, Radio } from "antd";
+import { useEffect, useState } from "react";
 
 export default function AuthorizationTab() {
   const dispatch = useAppDispatch();
 
   const authType = useAppSelector((state) => state.authorization.authType);
+  const authBearer = useAppSelector((state) => state.authorization.authBearer);
+  const username = useAppSelector((state) => state.authorization.username);
+  const password = useAppSelector((state) => state.authorization.password);
+  const authCustom = useAppSelector((state) => state.authorization.authCustom);
+
+  useEffect(() => {
+    switch (authType) {
+      case "BearerToken":
+        dispatch(setAuth(authBearer));
+        break;
+      case "BasicAuth":
+        dispatch(setAuth(btoa(username + ":" + password)));
+        break;
+      case "Custom":
+        dispatch(setAuth(authCustom));
+        break;
+      default:
+        break;
+    }
+  }, [authBearer, username, password, authCustom, authType]);
 
   return (
     <div className="flex flex-col">
@@ -29,7 +57,13 @@ export default function AuthorizationTab() {
               >
                 Token
               </label>
-              <Input id="bearerTokenValue" className="px-[15px]" size="large" />
+              <Input
+                id="bearerTokenValue"
+                className="px-[15px]"
+                size="large"
+                defaultValue={authBearer}
+                onChange={(e) => dispatch(setAuthBearer(e.target.value))}
+              />
             </div>
           ) : authType === "BasicAuth" ? (
             <>
@@ -40,7 +74,13 @@ export default function AuthorizationTab() {
                 >
                   Username
                 </label>
-                <Input id="username" className="px-[15px]" size="large" />
+                <Input
+                  id="username"
+                  className="px-[15px]"
+                  size="large"
+                  defaultValue={username}
+                  onChange={(e) => dispatch(setUsername(e.target.value))}
+                />
               </div>
               <div className="flex mb-[16px]">
                 <label
@@ -49,7 +89,13 @@ export default function AuthorizationTab() {
                 >
                   Password
                 </label>
-                <Input id="password" className="px-[15px]" size="large" />
+                <Input.Password
+                  id="password"
+                  className="px-[15px]"
+                  size="large"
+                  defaultValue={password}
+                  onChange={(e) => dispatch(setPassword(e.target.value))}
+                />
               </div>
             </>
           ) : authType === "Custom" ? (
@@ -60,7 +106,13 @@ export default function AuthorizationTab() {
               >
                 Header
               </label>
-              <Input id="header" className="px-[15px]" size="large" />
+              <Input
+                id="header"
+                className="px-[15px]"
+                size="large"
+                defaultValue={authCustom}
+                onChange={(e) => dispatch(setAuthCustom(e.target.value))}
+              />
             </div>
           ) : (
             ""

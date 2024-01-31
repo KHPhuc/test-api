@@ -71,10 +71,6 @@ export default function ContentTab() {
             value: "TEXT",
             label: "TEXT (text/plain)",
           },
-          {
-            value: "CUSTOM",
-            label: "CUSTOM",
-          },
         ]}
         value={contentType}
         onChange={(e) => dispatch(setContentType(e))}

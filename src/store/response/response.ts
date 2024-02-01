@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   status: 0,
+  time: 0,
 };
 
 const response = createSlice({
@@ -10,6 +11,9 @@ const response = createSlice({
   reducers: {
     setStatus(state, action) {
       state.status = action.payload;
+    },
+    setTime(state, action) {
+      state.time = action.payload;
     },
   },
 });

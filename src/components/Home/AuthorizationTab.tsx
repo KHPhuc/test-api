@@ -8,7 +8,7 @@ import {
 } from "@/store/authorization/authorization";
 import { useAppDispatch, useAppSelector } from "@/store/hook";
 import { Card, Input, Radio } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function AuthorizationTab() {
   const dispatch = useAppDispatch();

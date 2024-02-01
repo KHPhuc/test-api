@@ -51,6 +51,7 @@ authType
 export const makeRequest = (data: any) => (dispatch: any) => {
   const payload = handleContent(data.contentType, data.content);
   const header = {
+    "Access-Control-Allow-Origin": "*",
     ...handleHeaderContent(data.contentType),
     ...handleHeaderAuth(data.authType, data.auth),
     ...handleHeader(data.headers),

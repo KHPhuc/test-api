@@ -16,7 +16,6 @@ const response = createSlice({
       state.content = action.payload;
     },
     setHeaders(state, action) {
-      console.log(action.payload);
       const data = action.payload;
       let header = "";
       Object.keys(data).forEach((e, i) => {

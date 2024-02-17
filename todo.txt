@@ -1,7 +1,6 @@
 1. tạo code cho các ngôn ngữ
 
-2. định dạng lại dữ liệu trả về
+2. lưu request
 
-3. hiển thị headers trả về
-
-4. lưu lại
+3. định dạng dữ liệu trả về
+ - đã detect được html và json

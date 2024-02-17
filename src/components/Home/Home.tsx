@@ -23,6 +23,9 @@ import {
   setLineRaw,
   setRaw,
 } from "@/store/raw/raw";
+import { setIsOpenResponse } from "@/store/system/system";
+import { DetectContentType } from "@/libs/DetectContentType/DetectContentType";
+import ReactLoading from "react-loading";
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -35,6 +38,7 @@ export default function Home() {
     (state) => state.system.isOpenGenerateCode
   );
   const isOpenResponse = useAppSelector((state) => state.system.isOpenResponse);
+  const isRequesting = useAppSelector((state) => state.request.isRequsting);
 
   const [isSelectMethod, setIsSelectMethod] = useState(false);
   const [tabSelect, setTabSelect] = useState(0);
@@ -96,6 +100,9 @@ export default function Home() {
         rawPre += "\n" + rawAuth;
       }
       rawPre += "\n" + rawHost;
+      if (method === "post" || method === "put" || method === "patch") {
+        rawPre += "\n" + DetectContentType(contentType);
+      }
       if (rawHeaders !== "") {
         rawPre += "\n" + rawHeaders;
       }
@@ -106,7 +113,20 @@ export default function Home() {
       dispatch(setLineRaw(line));
     }
     dispatch(setRaw(rawPre));
-  }, [rawUrl, rawAuth, rawHost, rawHeaders, rawContent, dispatch]);
+  }, [
+    method,
+    contentType,
+    rawUrl,
+    rawAuth,
+    rawHost,
+    rawHeaders,
+    rawContent,
+    dispatch,
+  ]);
+
+  useEffect(() => {
+    dispatch(setIsOpenResponse(false));
+  }, []);
 
   return (
     <div className="flex">
@@ -125,7 +145,7 @@ export default function Home() {
         <div
           className="flex flex-col pb-5"
           style={{
-            borderBottom: "1px solid #dee2e6",
+            borderBottom: `${isOpenResponse ? "1px solid #dee2e6" : ""}`,
           }}
         >
           {/* Input url and button */}
@@ -134,6 +154,7 @@ export default function Home() {
               ref={inputRef}
               placeholder="https://google.com"
               size="large"
+              value={url}
               onChange={(e) => dispatch(setUrl(e.target.value))}
             />
             <Select
@@ -164,6 +185,7 @@ export default function Home() {
               type="primary"
               size="large"
               style={{ width: 120 }}
+              disabled={isRequesting}
               onClick={() => {
                 if (
                   url === "" ||
@@ -192,7 +214,19 @@ export default function Home() {
                 }
               }}
             >
-              Send
+              {isRequesting ? (
+                <div className="h-full w-full flex items-center justify-center">
+                  <ReactLoading
+                    className="flex items-center"
+                    type={"bubbles"}
+                    color={"#1677FF"}
+                    height={"60%"}
+                    width={"60%"}
+                  />
+                </div>
+              ) : (
+                "Send"
+              )}
             </Button>
           </div>
 
@@ -216,7 +250,7 @@ export default function Home() {
             <div className="flex gap-[5px]">
               {/* Button generate code */}
               <Tooltip
-                title="Share"
+                title="Generate code"
                 color="#7c7c7c"
                 placement="bottom"
                 arrow={false}
@@ -282,6 +316,7 @@ export default function Home() {
                     borderWidth: 0,
                     boxShadow: "none",
                   }}
+                  onClick={() => dispatch(setUrl("https://google.com"))}
                 >
                   <TbArrowsRightLeft size={24} />
                 </Button>

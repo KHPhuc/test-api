@@ -62,7 +62,14 @@ export default function Response() {
           <span>Status:</span>
           <span className={`text-[#278800]`}>
             {status} (
-            {status === 200 ? "OK" : status === 404 ? "Not Found" : ""})
+            {status === 200
+              ? "OK"
+              : status === 404
+              ? "Not Found"
+              : status === 405
+              ? "Method Not Allowed"
+              : ""}
+            )
           </span>
         </div>
         <div className="flex gap-2">

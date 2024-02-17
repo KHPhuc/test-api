@@ -9,10 +9,12 @@ import {
   setTime,
 } from "../response/response";
 import prettyBytes from "pretty-bytes";
+import { setIsOpenResponse } from "../system/system";
 
 const initialState = {
   url: "",
   method: "get",
+  isRequsting: false,
 };
 
 const request = createSlice({
@@ -25,10 +27,13 @@ const request = createSlice({
     setMethod(state, action) {
       state.method = action.payload;
     },
+    setIsRequesting(state, action) {
+      state.isRequsting = action.payload;
+    },
   },
 });
 
-export const { setUrl, setMethod } = request.actions;
+export const { setUrl, setMethod, setIsRequesting } = request.actions;
 
 export default request.reducer;
 
@@ -56,6 +61,8 @@ authType
   - NoAuths
 */
 export const makeRequest = (data: any) => (dispatch: any) => {
+  dispatch(setIsOpenResponse(false));
+  dispatch(setIsRequesting(true));
   const payload = handleContent(data.contentType, data.content);
   const header = {
     ...handleHeaderContent(data.contentType),
@@ -86,7 +93,10 @@ export const makeRequest = (data: any) => (dispatch: any) => {
     .catch((err) => {
       console.log(err);
     })
-    .finally();
+    .finally(() => {
+      dispatch(setIsOpenResponse(true));
+      dispatch(setIsRequesting(false));
+    });
 };
 
 const handleContent = (contentType: any, content: any) => {
@@ -132,6 +142,9 @@ const handleHeaderContent = (contentType: any) => {
   let cache = {};
   switch (contentType) {
     case "FORM":
+      cache = {
+        "Content-Type": "application/x-www-form-urlencoded",
+      };
       break;
     case "JSON":
       cache = {

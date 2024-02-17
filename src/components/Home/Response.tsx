@@ -3,8 +3,16 @@ import { useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { RxCopy } from "react-icons/rx";
 import { useAppSelector } from "@/store/hook";
+import { langs } from "@uiw/codemirror-extensions-langs";
+import { HeaderStore } from "@/libs/HeaderStore/HeaderStore";
+import createTheme from "@uiw/codemirror-themes";
+import { tags as t } from "@lezer/highlight";
 
 export default function Response() {
+  const content = useAppSelector((state) => state.response.content);
+  const headers = useAppSelector((state) => state.response.headers);
+  const size = useAppSelector((state) => state.response.size);
+  const time = useAppSelector((state) => state.response.time);
   const status = useAppSelector((state) => state.response.status);
 
   const [tabSelect, setTabSelect] = useState(0);
@@ -12,25 +20,40 @@ export default function Response() {
   const tab = [
     {
       id: 0,
-      label: `Content`,
+      label: `Content${
+        content.split("\n").length !== 0
+          ? " (" + content.split("\n").length + ")"
+          : ""
+      }`,
     },
     {
       id: 1,
-      label: "Headers",
-    },
-    {
-      id: 2,
-      label: "Raw",
-    },
-    {
-      id: 3,
-      label: "JSON",
-    },
-    {
-      id: 4,
-      label: "Timings",
+      label: `Headers${
+        headers.split("\n").length !== 0
+          ? " (" + headers.split("\n").length + ")"
+          : ""
+      }`,
     },
   ];
+
+  const customTheme = createTheme({
+    theme: "light",
+    settings: {},
+    styles: [
+      {
+        tag: t.atom,
+        color: "#219",
+      },
+      {
+        tag: t.string,
+        color: "#a11",
+      },
+      {
+        tag: t.comment,
+        color: "#f00",
+      },
+    ],
+  });
 
   return (
     <div className="flex flex-col mt-5">
@@ -44,11 +67,11 @@ export default function Response() {
         </div>
         <div className="flex gap-2">
           <span>Time:</span>
-          <span></span>
+          <span>{time} ms</span>
         </div>
         <div className="flex gap-2">
           <span>Size:</span>
-          <span></span>
+          <span>{size}</span>
         </div>
       </h5>
       <div className="mt-[25px]">
@@ -72,13 +95,19 @@ export default function Response() {
             highlightActiveLineGutter: false,
             highlightActiveLine: false,
             lineNumbers: false,
+            foldGutter: tabSelect === 0 ? true : false,
           }}
+          extensions={[tabSelect === 0 ? langs.html() : HeaderStore()]}
+          theme={tabSelect === 0 ? "none" : customTheme}
           readOnly={true}
-          value={""}
+          value={tabSelect === 0 ? content : headers}
         />
+
         <div
           className="absolute bottom-1 right-4 cursor-pointer btn-copy"
-          onClick={() => navigator.clipboard.writeText}
+          onClick={() =>
+            navigator.clipboard.writeText(tabSelect === 0 ? content : headers)
+          }
         >
           <RxCopy size={25} />
         </div>

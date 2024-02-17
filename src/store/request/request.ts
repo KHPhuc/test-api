@@ -1,7 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import qs from "qs";
-import { setStatus } from "../response/response";
+import {
+  setContent,
+  setHeaders,
+  setSize,
+  setStatus,
+  setTime,
+} from "../response/response";
+import prettyBytes from "pretty-bytes";
 
 const initialState = {
   url: "",
@@ -51,7 +58,6 @@ authType
 export const makeRequest = (data: any) => (dispatch: any) => {
   const payload = handleContent(data.contentType, data.content);
   const header = {
-    "Access-Control-Allow-Origin": "*",
     ...handleHeaderContent(data.contentType),
     ...handleHeaderAuth(data.authType, data.auth),
     ...handleHeader(data.headers),
@@ -61,22 +67,26 @@ export const makeRequest = (data: any) => (dispatch: any) => {
 
   const config = {
     method: data.method,
-    maxBodyLength: Infinity,
     url: data.url,
     headers: header,
     data: payload,
+    maxRedirects: 20,
   };
 
   axios
-    .request(config)
+    .post("http://localhost:3000/api/v1/requests", config)
     .then((res) => {
-      console.log(res);
-      dispatch(setStatus(res.status));
+      const data = res.data;
+      dispatch(setContent(data.content));
+      dispatch(setSize(prettyBytes(data.contentLength)));
+      dispatch(setHeaders(data.headers));
+      dispatch(setTime(data.elapsed));
+      dispatch(setStatus(data.statusCode));
     })
-    .then((err) => {
+    .catch((err) => {
       console.log(err);
     })
-    .finally(() => {});
+    .finally();
 };
 
 const handleContent = (contentType: any, content: any) => {
@@ -152,6 +162,11 @@ const handleHeaderContent = (contentType: any) => {
 
 const handleHeaderAuth = (authType: any, auth: any) => {
   let cache = {};
+
+  if (!auth) {
+    return cache;
+  }
+
   switch (authType) {
     case "BearerToken":
       cache = {

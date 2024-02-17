@@ -52,10 +52,10 @@ export default function HeadersTab() {
           } else {
             dispatch(setLineHeader(editor.state.doc.text.length));
           }
-          let splitE = e.split("\n");
-          let cacheE = e.split("\n");
+          const splitE = e.split("\n");
+          const cacheE = e.split("\n");
           splitE.forEach((element: any, i:any) => {
-            let splitElement = element.split(":");
+            const splitElement = element.split(":");
             if (splitElement[0].match(/\s+/)) {
               splitElement[0] = splitElement[0].replace(/\s+/, "");
             }

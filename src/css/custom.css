@@ -51,8 +51,13 @@
 .icon-close {
   display: none;
   transition: all 0.3s;
+  width: 25px !important;
 }
 
 .card-list:hover .icon-close {
   display: block;
+}
+
+.card-list:hover .info-saved {
+  width: calc(100% - 25px);
 }

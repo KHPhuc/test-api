@@ -8,11 +8,12 @@ import raw from "./raw/raw";
 import system from "./system/system";
 import request from "./request/request";
 import response from "./response/response";
+import save from "./save/save";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: [],
+  whitelist: ["save"],
 };
 
 const persistedReducer = persistReducer(
@@ -27,6 +28,8 @@ const persistedReducer = persistReducer(
     authorization: authorization,
     headers: headers,
     raw: raw,
+
+    save: save,
   })
 );
 

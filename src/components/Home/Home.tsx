@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { TbArrowsRightLeft } from "react-icons/tb";
 import { RiArrowDownSFill } from "react-icons/ri";
 import { RxMagicWand } from "react-icons/rx";
+import { IoSaveOutline } from "react-icons/io5";
 import ContentTab from "./ContentTab";
 import AuthorizationTab from "./AuthorizationTab";
 import Headers from "./HeadersTab";
@@ -26,6 +27,7 @@ import {
 import { setIsOpenResponse } from "@/store/system/system";
 import { DetectContentType } from "@/libs/DetectContentType/DetectContentType";
 import ReactLoading from "react-loading";
+import { setListSaved } from "@/store/save/save";
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -56,6 +58,12 @@ export default function Home() {
   const rawHost = useAppSelector((state) => state.raw.rawHost);
   const rawHeaders = useAppSelector((state) => state.raw.rawHeaders);
   const rawContent = useAppSelector((state) => state.raw.rawContent);
+
+  const authBearer = useAppSelector((state) => state.authorization.authBearer);
+  const username = useAppSelector((state) => state.authorization.username);
+  const password = useAppSelector((state) => state.authorization.password);
+  const authCustom = useAppSelector((state) => state.authorization.authCustom);
+  const save = useAppSelector((state) => state.save.listSaved);
 
   const tab = [
     {
@@ -126,7 +134,7 @@ export default function Home() {
 
   useEffect(() => {
     dispatch(setIsOpenResponse(false));
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="flex">
@@ -319,6 +327,40 @@ export default function Home() {
                   onClick={() => dispatch(setUrl("https://google.com"))}
                 >
                   <TbArrowsRightLeft size={24} />
+                </Button>
+              </Tooltip>
+              {/* Button save */}
+              <Tooltip
+                title="Save"
+                color="#7c7c7c"
+                placement="bottom"
+                arrow={false}
+              >
+                <Button
+                  type="default"
+                  style={{
+                    borderWidth: 0,
+                    boxShadow: "none",
+                  }}
+                  onClick={() => {
+                    const data = {
+                      method: method,
+                      url: url,
+                      contentType: contentType,
+                      content: content,
+                      authType: authType,
+                      auth: auth,
+                      authBearer: authBearer,
+                      username: username,
+                      password: password,
+                      authCustom: authCustom,
+                      headers: headers,
+                    };
+                    const newList: any = [...save, data];
+                    dispatch(setListSaved(newList));
+                  }}
+                >
+                  <IoSaveOutline size={24} />
                 </Button>
               </Tooltip>
             </div>
